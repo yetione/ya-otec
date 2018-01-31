@@ -1,6 +1,7 @@
 from grab.spider import Spider, Task, Data
 from grab import Grab
 import browsers
+import webbrowser
 
 
 class ShumSpider(Spider):
@@ -17,7 +18,7 @@ class ShumSpider(Spider):
 
 if __name__ == '__main__':
     bot = ShumSpider(thread_number=10)
-
+    webbrowser.get('google-chrome')
     try:
         bot.run()
     except KeyboardInterrupt:
