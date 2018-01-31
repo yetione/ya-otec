@@ -1,3 +1,3 @@
-from browsers.browser import Browser
+from browsers.browser import Browser, Url
 from browsers.errors import BrowserCantFindBasePath, BrowserCantFindHistory
 from browsers.chrome import ChromeBrowser

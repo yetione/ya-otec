@@ -1,7 +1,10 @@
 import os
-from browsers import Browser, BrowserCantFindHistory
-from browsers import BrowserCantFindBasePath
+from browsers import Browser, \
+    Url, \
+    BrowserCantFindHistory, \
+    BrowserCantFindBasePath
 from browsers.history.sqlite import SQLiteHistory
+from time import time
 
 
 class ChromeBrowser(Browser):
@@ -40,6 +43,23 @@ class ChromeBrowser(Browser):
             raise BrowserCantFindBasePath('Chrome')
 
     def get_history(self, period=None):
-        pass
+        sql = 'SELECT u.url FROM urls u WHERE 1'
+        args = []
+        if period is not None:
+            if 'from' in period:
+                sql += ' AND u.last_visit_time >= ?'
+                args.append(int(period['from']))
+            if 'to' in period:
+                sql += ' AND u.last_visit_time <= ?'
+                args.append(int(period['to']))
+        result = self._history_db.cursor.execute(sql, tuple(args))
+        while True:
+            r = result.fetchone()
+            print(r)
+            if r is None:
+                break
+            yield Url(r[0], **{'User-Agent': self.user_agent})
+
+
 
 
