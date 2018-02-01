@@ -23,8 +23,8 @@ class ChromeBrowser(Browser):
     _history_path = ''
     _history_db = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, browser):
+        super().__init__(browser)
         self.user_agent = self._user_agents.chrome
         self._load_data()
 
@@ -42,7 +42,7 @@ class ChromeBrowser(Browser):
         else:
             raise BrowserCantFindBasePath('Chrome')
 
-    def get_history(self, period=None):
+    def get_history(self, period=None, limit=None):
         sql = 'SELECT u.url FROM urls u WHERE 1'
         args = []
         if period is not None:
@@ -52,10 +52,17 @@ class ChromeBrowser(Browser):
             if 'to' in period:
                 sql += ' AND u.last_visit_time <= ?'
                 args.append(int(period['to']))
+        if limit is not None:
+            if 'count' in limit:
+                sql += ' LIMIT ?'
+                args.append(int(limit['count']))
+            if 'offset' in limit:
+                sql += 'OFFSET ?'
+                args.append(int(limit['offset']))
+
         result = self._history_db.cursor.execute(sql, tuple(args))
         while True:
             r = result.fetchone()
-            print(r)
             if r is None:
                 break
             yield Url(r[0], **{'User-Agent': self.user_agent})

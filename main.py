@@ -3,6 +3,8 @@ from grab import Grab
 import browsers
 import webbrowser
 
+from application import Application
+
 
 class ShumSpider(Spider):
 
@@ -17,10 +19,10 @@ class ShumSpider(Spider):
 
 
 if __name__ == '__main__':
-    bot = ShumSpider(thread_number=10)
-    webbrowser.get('google-chrome')
+    app = Application()
     try:
-        bot.run()
+        app.run_spider()
     except KeyboardInterrupt:
         pass
-    print(bot.render_stats())
+    print(app.spider.render_stats())
+    app.stop_spider()
