@@ -42,7 +42,7 @@ class ChromeBrowser(Browser):
         else:
             raise BrowserCantFindBasePath('Chrome')
 
-    def get_history(self, period=None, limit=None):
+    def get_history(self, period=None, limit=None, order_by=None):
         sql = 'SELECT u.url FROM urls u WHERE 1'
         args = []
         if period is not None:
@@ -52,6 +52,8 @@ class ChromeBrowser(Browser):
             if 'to' in period:
                 sql += ' AND u.last_visit_time <= ?'
                 args.append(int(period['to']))
+        if order_by is not None:
+            sql += ' ORDER BY ' + ' '.join(order_by)
         if limit is not None:
             if 'count' in limit:
                 sql += ' LIMIT ?'
@@ -59,6 +61,8 @@ class ChromeBrowser(Browser):
             if 'offset' in limit:
                 sql += 'OFFSET ?'
                 args.append(int(limit['offset']))
+
+
 
         result = self._history_db.cursor.execute(sql, tuple(args))
         while True:

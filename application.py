@@ -1,5 +1,5 @@
 import webbrowser
-from time import time
+from time import time, sleep
 
 from grab import Grab
 from grab.spider import Task
@@ -14,6 +14,10 @@ class Application:
     current_browsers = []
     loaded_browsers = {}
     spider = None
+    restricted_parts = ['127.0.0', '//localhost', '//google.ru/', '//google.com/', '.local/', '//192.168',
+                        '//www.google.ru',
+                        '//www.google.com', '//yandex.ru', '//www.yandex.ru', '//vk.com', '//www.vk.com']
+    visited = {}
 
     def __init__(self):
         self.available_browsers = webbrowser._browsers
@@ -37,15 +41,31 @@ class Application:
 
     def run_spider(self):
         browser = self.get_browser('google-chrome')
-        history_generator = browser.get_history(limit={'count': 20})
+        history_generator = browser.get_history(limit={'count': 1}, order_by=['RANDOM()'])
+        self.spider.browser = browser
+        self.spider.application = self
         self.spider.setup_queue()
         for element in history_generator:
+            url = element.get_url()
+            if not self.is_valid_url(url) or url in self.visited:
+                continue
             g = Grab()
-            g.setup(headers={'User-Agent': element.headers['User-Agent']})
-            print(element.url)
-            self.spider.add_task(Task('history_element', url=element.url, grab=g))
+            g.setup(url=url, headers={'User-Agent': element.headers['User-Agent']})
+            self.spider.add_task(Task('history_element', grab=g))
+            self.visited[url] = 1
         #self.spider.set_history(history_generator)
         self.spider.run()
+
+    def is_valid_url(self, url):
+        if url.startswith('http://') or url.startswith('https://'):
+            for part in self.restricted_parts:
+                try:
+                    url.index(part)
+                    return False
+                except ValueError:
+                    continue
+            return True
+        return False
 
     def stop_spider(self):
         self.spider.stop()

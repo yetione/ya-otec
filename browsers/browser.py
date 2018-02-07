@@ -21,3 +21,7 @@ class Url:
         self.parsed = urlparse(url)
         self.url = url
         self.headers = headers
+
+    def get_url(self):
+        return self.parsed.scheme + '://' + self.parsed.netloc + self.parsed.path
+
