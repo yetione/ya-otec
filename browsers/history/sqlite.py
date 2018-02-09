@@ -1,4 +1,3 @@
-import sqlite3
 import os
 import sqlite3
 from hashlib import md5
@@ -36,8 +35,7 @@ class SQLiteHistory(History):
             self.commit()
         self.close()
         if self.copy_db and self.delete_db_copy:
-            if self.db_file.index(os.path.realpath(self.copy_dir)) == 0:
-                os.remove(self.db_file)
+            self._delete_db()
 
     def _copy_db(self):
         db_name = os.path.basename(self.db_file)
@@ -59,6 +57,10 @@ class SQLiteHistory(History):
             self.db_file = db_path
             return True
         return False
+
+    def _delete_db(self):
+        if self.db_file.index(os.path.realpath(self.copy_dir)) == 0:
+            os.remove(self.db_file)
 
     def _connect(self):
         if self.connection is None:

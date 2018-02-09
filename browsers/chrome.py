@@ -35,7 +35,7 @@ class ChromeBrowser(Browser):
                 history_path = os.path.join(path, 'Default', 'History')
                 if os.path.exists(history_path):
                     self._history_path = history_path
-                    self._history_db = SQLiteHistory(self._history_path, delete_db_copy=False)
+                    self._history_db = SQLiteHistory(self._history_path, delete_db_copy=True)
                 else:
                     raise BrowserCantFindHistory('Chrome')
                 break

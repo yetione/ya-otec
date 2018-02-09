@@ -25,7 +25,6 @@ class Application:
 
     def get_browser(self, name):
         """
-
         :param name:
         :return:  Browser object
         :rtype: ChromeBrowser
