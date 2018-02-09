@@ -30,6 +30,7 @@ class Application:
         self.available_browsers = webbrowser._browsers
         self.storage = Storage()
         self.spider = ShumSpider(thread_number=10)
+        self.spider.task_interval = self.storage.options.get('task_interval', 1)
 
     def get_browser(self, name):
         """

@@ -6,6 +6,7 @@ from browsers import Url
 
 class ShumSpider(Spider):
     application = None
+    task_interval = 1
 
     def get_urls(self, grab):
         links = grab.doc.tree.xpath('//a/@href')
@@ -15,9 +16,10 @@ class ShumSpider(Spider):
 
     def task_history_element(self, grab, task):
         print(task.url)
+        sleep(self.task_interval)
         if task.visit_deep:
             links = self.get_urls(grab)
-            # sleep(.5)
+
             for element in links:
                 url = element.get_url()
                 if self.application.is_valid_url(url) and url not in self.application.visited:
