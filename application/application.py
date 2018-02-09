@@ -37,11 +37,9 @@ class Application:
         :return:  Browser object
         :rtype: ChromeBrowser
         """
-        if name not in self.available_browsers:
-            raise BrowserNotFound(name)
-        elif name == 'chrome' or name == 'google-chrome':
+        if name == 'chrome' or name == 'google-chrome':
             if 'chrome' not in self.loaded_browsers:
-                self.loaded_browsers['chrome'] = ChromeBrowser(webbrowser.get(name))
+                self.loaded_browsers['chrome'] = ChromeBrowser(None)
             return self.loaded_browsers['chrome']
         elif name == 'firefox':
             if 'firefox' not in self.loaded_browsers:

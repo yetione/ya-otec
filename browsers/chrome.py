@@ -17,26 +17,34 @@ class ChromeBrowser(Browser):
         os.path.expanduser('~/.config/google-chrome/'),
         os.path.expanduser('~/.config/chromium/'),
         'C:\\Users\\%s\\AppData\\Local\\Google\\Chrome\\' % os.environ.get('USERNAME'),
+        'C:\\Users\\%s\\AppData\\Local\\Google\\Chrome\\User Data' % os.environ.get('USERNAME'),
         'C:\\Documents and Settings\\%s\\Local Settings\\Application Data\\Google\\Chrome\\' % os.environ.get(
             'USERNAME')
     )
     _history_path = ''
     _history_db = None
 
-    def __init__(self, browser):
+    def __init__(self, browser=None):
         super().__init__(browser)
         self.user_agent = self._user_agents.chrome
         self._load_data()
 
     @staticmethod
     def _get_history_file(path):
-        return os.path.join(path, 'Default', 'History')
+        possible_path = os.path.join(path, 'Default', 'History')
+        if os.path.exists(possible_path):
+            return possible_path
+        possible_path = os.path.join(path, 'User Data', 'Default', 'History')
+        if os.path.exists(possible_path):
+            return possible_path
+        raise FileNotFoundError('_get_history_file::Application: cant find history')
 
     def _load_data(self):
         for path in self._possible_paths:
             if os.path.exists(path):
                 self._base_path = path
                 history_path = self._get_history_file(path)
+                print(history_path)
                 if os.path.exists(history_path):
                     self._history_path = history_path
                     self._history_db = SQLiteHistory(self._history_path, delete_db_copy=True)
