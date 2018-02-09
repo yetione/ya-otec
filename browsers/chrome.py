@@ -28,19 +28,23 @@ class ChromeBrowser(Browser):
         self.user_agent = self._user_agents.chrome
         self._load_data()
 
+    @staticmethod
+    def _get_history_file(path):
+        return os.path.join(path, 'Default', 'History')
+
     def _load_data(self):
         for path in self._possible_paths:
             if os.path.exists(path):
                 self._base_path = path
-                history_path = os.path.join(path, 'Default', 'History')
+                history_path = self._get_history_file(path)
                 if os.path.exists(history_path):
                     self._history_path = history_path
                     self._history_db = SQLiteHistory(self._history_path, delete_db_copy=True)
                 else:
-                    raise BrowserCantFindHistory('Chrome')
+                    raise BrowserCantFindHistory(self.name)
                 break
         else:
-            raise BrowserCantFindBasePath('Chrome')
+            raise BrowserCantFindBasePath(self.name)
 
     def get_history(self, period=None, limit=None, order_by=None):
         sql = 'SELECT u.url FROM urls u WHERE 1'
@@ -61,8 +65,6 @@ class ChromeBrowser(Browser):
             if 'offset' in limit:
                 sql += 'OFFSET ?'
                 args.append(int(limit['offset']))
-
-
 
         result = self._history_db.cursor.execute(sql, tuple(args))
         while True:

@@ -105,7 +105,7 @@ class Urls:
     def __init__(self, storage):
         self.storage = storage
 
-    def get(self, address=None, date_add=None, last_visit=None, request_type=None, is_active=True):
+    def get(self, address=None, date_add=None, last_visit=None, request_type=None, is_active=True, limit=None):
         sql = "SELECT * FROM urls WHERE 1"
         sql_args = []
         if address is not None:
@@ -135,6 +135,13 @@ class Urls:
         if is_active is not None:
             sql += " AND is_active=?"
             sql_args.append(int(is_active))
+        if limit is not None and isinstance(limit, dict):
+            if 'count' in limit:
+                sql += ' LIMIT ?'
+                sql_args.append(int(limit['count']))
+            if 'offset' in limit:
+                sql += 'OFFSET ?'
+                sql_args.append(int(limit['offset']))
 
         try:
             result = self.storage.cursor.execute(sql, tuple(sql_args))
@@ -142,7 +149,7 @@ class Urls:
                 record = result.fetchone()
                 if not record:
                     break
-                yield Url(record)
+                yield Url(self, record)
         except sqlite3.OperationalError:
             print('get::Urls Model: error when load urls')
 
@@ -219,6 +226,7 @@ class Url:
         if len(params) != 9:
             raise ValueError('init_params::Url: params length must be 9. Received: ' + str(len(params)))
         self.id, self.address, self.headers, self.cookies, self.date_add, self.last_visit, self.request_type, self.is_active, self.add_by = params
+        self._parsed = urlparse(self.address)
 
     def get_headers(self, serialize=False):
         return json.dumps(self.headers) if serialize else self.headers
@@ -230,7 +238,7 @@ class Url:
         return self._parsed.scheme + '://' + self._parsed.netloc + self._parsed.path
 
     def save(self):
-        self._model.save(self)
+        return self._model.save(self)
 
 
 
