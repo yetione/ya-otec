@@ -1,36 +1,76 @@
 import webbrowser
 
+from PyQt5.QtCore import QUrl, QFileInfo
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.Qt import QWebEngineView, QWebEngineScript, QIODevice, QFile, QWebChannel, QWebEngineProfile, QWebEngineSettings
 from grab import Grab
 from grab.spider import Task
+from os.path import realpath
+from multiprocessing import Process
+from time import time, sleep
+from re import match
 
 from application.storage import Storage
+from application.webpage import WebPage
 from browsers import ChromeBrowser
 from browsers.firefox import FirefoxBrowser
 from browsers.opera import OperaBrowser
 from errors import BrowserNotFound, BrowserNotSupport
-from time import time
-from re import match
+
+
 
 from spider import ShumSpider
+from application.js_objects import *
+# from application.thread import SpiderThread
 
 
-class Application:
+class Application(QMainWindow):
     available_browsers = []
     current_browsers = []
     loaded_browsers = {}
     storage = None
     visited = []
-
-    """
-    :type: ShumSpider
-    """
+    spider_running = False
     spider = None
+    """
+        :type: ShumSpider
+    """
 
-    def __init__(self):
+    def __init__(self, parent=None):
+        super(Application, self).__init__(parent)
+
         self.available_browsers = webbrowser._browsers
         self.storage = Storage()
-        self.spider = ShumSpider(thread_number=10)
+        self.spider = self.create_spider()
         self.spider.task_interval = self.storage.options.get('task_interval', 1)
+        self.spider_process = Process(target=self.spider.run)
+        self.spider_object = SpiderObject(self)
+        self.queue = Queue()
+        self.setup_ui()
+
+    def setup_ui(self):
+        self.setObjectName('MainWindow')
+        self.resize(1000, 600)
+        
+        self.web_view = QWebEngineView(self)
+        self.web_view.resize(1000, 600)
+        self.setCentralWidget(self.web_view)
+        
+        self.web_profile = QWebEngineProfile(self.web_view)
+        self.web_profile.settings().setAttribute(QWebEngineSettings.LocalStorageEnabled, True)
+        
+        self.web_page = WebPage(self.web_profile, self)
+        self.web_page.application = self
+        self.web_view.setPage(self.web_page)
+        # self.web_page.profile().scripts().insert(self.client_script())
+        self.web_page.profile()
+        self.chanel = QWebChannel(self.web_page)
+        self.web_page.setWebChannel(self.chanel)
+        self.chanel.registerObject('bridge', self.web_page)
+        self.chanel.registerObject('spider', self.spider_object)
+
+        qFile_page = QFile(realpath('./interface/index.html'))
+        self.web_view.load(QUrl.fromLocalFile(QFileInfo(qFile_page).absoluteFilePath()))
 
     def get_browser(self, name):
         """
@@ -78,12 +118,24 @@ class Application:
         return loaded_elements
 
     def run_spider(self, count=None):
+        print('on start')
+        self.queue = Queue()
+        self.spider_process = Process(target=self._start_spider, args=(count, self.queue))
+        self.spider_running = True
+        self.spider_process.start()
+        print('after start')
+
+    def _start_spider(self, count, queue):
+        self.spider = self.create_spider()
         self.spider.application = self
+        self.spider.history_args = {'limit': {'count': count}}
+        """
+        
         self.spider.setup_queue()
         if count is None:
             url_result = self.storage.urls.get()
         else:
-            url_result = self.storage.urls.get(limit={'count':count})
+            url_result = self.storage.urls.get(limit={'count': count})
         for element in url_result:
             url = element.get_url()
             if url in self.visited:
@@ -92,7 +144,22 @@ class Application:
             g.setup(url=url, headers=element.headers)
             self.spider.add_task(Task('history_element', grab=g, visit_deep=False))
             self.visited.append(url)
-        self.spider.run()
+            
+        """
+        self.spider.run(queue)
+
+    def stop_spider(self):
+        print('on stop spider')
+        if self.spider_running:
+            print('spider running')
+            self.spider_running = False
+            self.spider_process.terminate()
+            self.spider.stop()
+
+            sleep(0.1)
+
+    def create_spider(self):
+        return ShumSpider(thread_number=10, transport='threaded')
 
     def is_valid_url(self, url):
         available_schemas = self.storage.options.get('available_schemas', [])
