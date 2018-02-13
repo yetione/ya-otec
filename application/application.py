@@ -118,45 +118,25 @@ class Application(QMainWindow):
         return loaded_elements
 
     def run_spider(self, count=None):
-        print('on start')
-        self.queue = Queue()
-        self.spider_process = Process(target=self._start_spider, args=(count, self.queue))
-        self.spider_running = True
-        self.spider_process.start()
-        print('after start')
+        if not self.spider_running:
+            self.queue = Queue()
+            self.spider_process = Process(target=self._start_spider, args=(count, self.queue))
+            self.spider_running = True
+            self.spider_process.start()
+            print('Spider running')
 
     def _start_spider(self, count, queue):
         self.spider = self.create_spider()
         self.spider.application = self
         self.spider.history_args = {'limit': {'count': count}}
-        """
-        
-        self.spider.setup_queue()
-        if count is None:
-            url_result = self.storage.urls.get()
-        else:
-            url_result = self.storage.urls.get(limit={'count': count})
-        for element in url_result:
-            url = element.get_url()
-            if url in self.visited:
-                continue
-            g = Grab()
-            g.setup(url=url, headers=element.headers)
-            self.spider.add_task(Task('history_element', grab=g, visit_deep=False))
-            self.visited.append(url)
-            
-        """
         self.spider.run(queue)
 
     def stop_spider(self):
-        print('on stop spider')
         if self.spider_running:
-            print('spider running')
             self.spider_running = False
             self.spider_process.terminate()
             self.spider.stop()
-
-            sleep(0.1)
+            print('Spider stopped')
 
     def create_spider(self):
         return ShumSpider(thread_number=10, transport='threaded')
