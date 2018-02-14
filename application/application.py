@@ -16,8 +16,7 @@ from browsers import ChromeBrowser
 from browsers.firefox import FirefoxBrowser
 from browsers.opera import OperaBrowser
 from errors import BrowserNotFound, BrowserNotSupport
-
-
+import logging
 
 from spider import ShumSpider
 from application.js_objects import *
@@ -123,7 +122,8 @@ class Application(QMainWindow):
             self.spider_process = Process(target=self._start_spider, args=(count, self.queue))
             self.spider_running = True
             self.spider_process.start()
-            print('Spider running')
+            logger = logging.getLogger('shum.app')
+            logger.debug('Spider running')
 
     def _start_spider(self, count, queue):
         self.spider = self.create_spider()
@@ -136,7 +136,8 @@ class Application(QMainWindow):
             self.spider_running = False
             self.spider_process.terminate()
             self.spider.stop()
-            print('Spider stopped')
+            logger = logging.getLogger('shum.app')
+            logger.debug('Spider stopped')
 
     def create_spider(self):
         return ShumSpider(thread_number=10, transport='threaded')

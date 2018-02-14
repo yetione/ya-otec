@@ -6,6 +6,7 @@ from re import match
 
 from application.storage import Storage
 from browsers import Url
+import logging
 
 
 class ShumSpider(Spider):
@@ -45,8 +46,9 @@ class ShumSpider(Spider):
             yield Task('history_element', grab=g, visit_deep=False)
 
     def task_history_element(self, grab, task):
-        print(task.url)
-        self.queue.put_nowait({'url': task.url})
+        logger = logging.getLogger('shum.spider')
+        logger.debug(task.url)
+        self.queue.put({'url': task.url})
         sleep(self.task_interval)
         if task.visit_deep:
             links = self.get_urls(grab)

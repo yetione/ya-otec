@@ -67,6 +67,7 @@ $(document).ready(function(){
 
         })
     }, 2);
+
     $('#stopSpiderBtn').on('click', function(event){
         spider.stop(function (state) {
             console.log('spider stopped')

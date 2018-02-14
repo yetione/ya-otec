@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 
 from application.application import Application
+from application.log import logger
 
 import sys
 if sys.platform.startswith('linux'):
