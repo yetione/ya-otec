@@ -5,10 +5,11 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.Qt import QWebEngineView, QWebEngineScript, QIODevice, QFile, QWebChannel, QWebEngineProfile, QWebEngineSettings
 from grab import Grab
 from grab.spider import Task
-from os.path import realpath
+from os.path import realpath, getmtime, exists
 from multiprocessing import Process
 from time import time, sleep
 from re import match
+from jinja2 import Environment, FileSystemLoader
 
 from application.storage import Storage
 from application.webpage import WebPage
@@ -44,6 +45,7 @@ class Application(QMainWindow):
         self.spider.task_interval = self.storage.options.get('task_interval', 1)
         self.spider_process = Process(target=self.spider.run)
         self.spider_object = SpiderObject(self)
+        self.force_compile = True
         self.queue = Queue()
         self.setup_ui()
 
@@ -67,8 +69,17 @@ class Application(QMainWindow):
         self.web_page.setWebChannel(self.chanel)
         self.chanel.registerObject('bridge', self.web_page)
         self.chanel.registerObject('spider', self.spider_object)
+        self.set_page()
 
-        qFile_page = QFile(realpath('./interface/index.html'))
+    def set_page(self):
+        if self.force_compile or not exists(realpath('./data/compiled/index.html')) or \
+                getmtime(realpath('./interface/index.html')) > getmtime(realpath('./data/compiled/index.html')):
+            env = Environment(loader=FileSystemLoader('./interface'))
+            template = env.get_template('index.html')
+            file = open(realpath('./data/compiled/index.html'), 'w')
+            file.write(template.render(basepath='../../interface'))
+            file.close()
+        qFile_page = QFile(realpath('./data/compiled/index.html'))
         self.web_view.load(QUrl.fromLocalFile(QFileInfo(qFile_page).absoluteFilePath()))
 
     def get_browser(self, name):

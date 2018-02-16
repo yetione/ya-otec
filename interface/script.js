@@ -1,14 +1,15 @@
 new QWebChannel(qt.webChannelTransport, function(channel) {
     window.bridge = channel.objects.bridge;
-    window.spider = channel.objects.spider;
+    //window.spider = channel.objects.spider;
+    window.spider = new Spider(channel.objects.spider);
 
 
     /*spider.task_done.connect(function(task){
         console.log('task done ' + task.url)
     });*/
-    spider.get_state(function (state) {
+    /*spider.get_state(function (state) {
         console.log('spider state ' + (state ? 'active' : 'disable'))
-    });
+    });*/
     /*spider.state_changed.connect(function(state){
         console.log('spider change state ' + (state ? 'active' : 'disable'))
     });
@@ -16,28 +17,36 @@ new QWebChannel(qt.webChannelTransport, function(channel) {
     // bridge.print('Hello world!');
     // channel.objects.bridge.print('TEST')
 });
+var table = new Spider('#shumHistory');
 
 $(document).ready(function(){
     var $toggleBtn = $('#toggleSpider');
-    spider.get_state(function(state){
+    $(document).on('spiderStateChange', function(event, state){
+        console.log('changed');
         $toggleBtn.data('state', state);
         if (state){
-            $toggleBtn.addClass('btn-danger').text('Stop');
+            $toggleBtn.removeClass('btn-success').addClass('btn-danger').text('Stop');
         }else{
-            $toggleBtn.addClass('btn-success').text('Start');
+            $toggleBtn.removeClass('btn-danger').addClass('btn-success').text('Start');
         }
+
     });
+    $(document).on('spiderVisitedLinkAdd', function(event, link){
+        var $newRow = $('<tr style="opacity: 0"><td>'+link.url+'</td></tr>');
+        $('.j-visited-links > tbody').prepend($newRow);
+        $newRow.stop().animate({opacity:1}, 500);
+    });
+
     $toggleBtn.on('click', function (event) {
         var state = $toggleBtn.data('state');
+        $toggleBtn.prop('disabled', true);
         if (state){
-            spider.stop(function(s){
-                console.log('stopped');
-                $toggleBtn.removeClass('btn-danger').addClass('btn-success').text('Start').data('state', s);
+            spider.stop(function(){
+                $toggleBtn.prop('disabled', false);
             });
         }else{
-            spider.start(function(s){
-                console.log('started');
-                $toggleBtn.removeClass('btn-success').addClass('btn-danger').text('Stop').data('state', s);
+            spider.start(function(){
+                $toggleBtn.prop('disabled', false);
             });
         }
     });
@@ -55,8 +64,9 @@ $(document).ready(function(){
             $('#url-table>tbody').html(html);
         });
     });
+    //table.startUpdater();
 
-
+    /*
     setInterval(function(){
         spider.get_data(function(d){
             if (d.length){
@@ -67,6 +77,7 @@ $(document).ready(function(){
 
         })
     }, 2);
+    */
 
     $('#stopSpiderBtn').on('click', function(event){
         spider.stop(function (state) {
