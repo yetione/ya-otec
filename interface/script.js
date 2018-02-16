@@ -22,7 +22,6 @@ var table = new Spider('#shumHistory');
 $(document).ready(function(){
     var $toggleBtn = $('#toggleSpider');
     $(document).on('spiderStateChange', function(event, state){
-        console.log('changed');
         $toggleBtn.data('state', state);
         if (state){
             $toggleBtn.removeClass('btn-success').addClass('btn-danger').text('Stop');
@@ -32,7 +31,8 @@ $(document).ready(function(){
 
     });
     $(document).on('spiderVisitedLinkAdd', function(event, link){
-        var $newRow = $('<tr style="opacity: 0"><td>'+link.url+'</td></tr>');
+        var $newRow = $('<tr style="opacity: 0" data-toggle="modal" data-target="#urlDetailModal" class="visited-link"><td>'+link.url+'</td></tr>');
+        $newRow.data('full', link);
         $('.j-visited-links > tbody').prepend($newRow);
         $newRow.stop().animate({opacity:1}, 500);
     });
@@ -64,31 +64,17 @@ $(document).ready(function(){
             $('#url-table>tbody').html(html);
         });
     });
-    //table.startUpdater();
 
-    /*
-    setInterval(function(){
-        spider.get_data(function(d){
-            if (d.length){
-                var $element = $('<tr style="opacity: 0"><td>'+decodeURI(d[0].url)+'</td></tr>');
-                $('#shumHistory > table > tbody').prepend($element);
-                $element.stop().animate({opacity:1}, 500)
-            }
+    $('#urlDetailModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var url = button.data('full');
+        var modal = $(this);
+        modal.find('.j-url-url>td').html('<a href="'+url.url+'">'+url.url+'</a>');
+        modal.find('.j-url-code>td').text(url.result_code);
+        modal.find('.j-url-time>td').text(url.request_time);
+        modal.find('.j-url-size>td').text(url.page_size);
+        modal.find('.j-url-ip>td').text(url.host_ip);
 
-        })
-    }, 2);
-    */
-
-    $('#stopSpiderBtn').on('click', function(event){
-        spider.stop(function (state) {
-            console.log('spider stopped')
-        });
-    });
-
-    $('#startSpiderBtn').on('click', function(event){
-        spider.start(function (state) {
-            console.log('spider started')
-        });
     });
 });
 

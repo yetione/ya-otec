@@ -25,7 +25,7 @@
 <main>
     <div class="container-fluid">
         <div class="row">
-            <div class="col">
+            <div class="col col-md-8" id="visitedLinks">
                 {% include 'parts/visited-links.html' %}
             </div>
         </div>
@@ -34,6 +34,7 @@
 
 
 {% include 'dialogs/history.html' %}
+{% include 'dialogs/url-detail.html' %}
 
     <script src="{{basepath}}/libs/jquery-3.3.1.min.js"></script>
     <script src="{{basepath}}/libs/popper.min.js"></script>

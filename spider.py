@@ -32,6 +32,23 @@ class ShumSpider(Spider):
     def stop(self):
         super(ShumSpider, self).stop()
 
+    @staticmethod
+    def make_queue_element(grab, task):
+        """
+        :param Task task:
+        :param Grab grab:
+        :return dict:
+        """
+        doc = grab.doc
+        result = {
+            'url': doc.url,
+            'result_code': doc.code,
+            'request_time': doc.total_time,
+            'page_size': doc.download_size,
+            'host_ip': doc.remote_ip,
+        }
+        return result
+
     def task_generator(self):
         self.visited = []
         self.storage = Storage()
@@ -48,7 +65,7 @@ class ShumSpider(Spider):
     def task_history_element(self, grab, task):
         logger = logging.getLogger('shum.spider')
         logger.debug(task.url)
-        self.queue.put({'url': task.url})
+        self.queue.put(self.make_queue_element(grab, task))
         sleep(self.task_interval)
         if task.visit_deep:
             links = self.get_urls(grab)
