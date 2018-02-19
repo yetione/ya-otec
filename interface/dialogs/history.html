@@ -1,36 +1,3 @@
-<div class="modal fade" id="historyElementModal" tabindex="-1" role="dialog" aria-labelledby="historyElementModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="historyElementModalLabel">History 11element modal</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <div class="row justify-content-center">
-                        <div class="col">
-                            <form>
-                                <div class="form-group">
-                                    <label for="element-address" class="col-form-label">Address:</label>
-                                    <input type="text" class="form-control" id="element-address">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -41,26 +8,100 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body list-tab">
                 <div class="container-fluid">
                     <div class="row justify-content-center">
                         <div class="col">
-                            <table class="table" id="url-table">
+                            <table class="table j-list-table">
                                 <thead>
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">url</th>
-                                    <th scope="col"></th>
+                                    <th scope="col" class="number">#</th>
+                                    <th scope="col" class="url">url</th>
+                                    <th scope="col" class="actions"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <th scope="row"></th>
-                                    <td></td>
-                                    <td></td>
+                                    <th scope="row" class="number"></th>
+                                    <td class="url"></td>
+                                    <td class="actions"></td>
                                 </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary j-load-more">Load More</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-body element-tab">
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col">
+                            <form>
+                                <div class="form-group row">
+                                    <label for="element-id" class="col-form-label col-sm-2">Id:</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" id="element-id" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-address" class="col-sm-2 col-form-label">Address:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="element-address">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-headers" class="col-sm-2 col-form-label">Headers:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="element-headers">
+                                    </div>
+
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-cookies" class="col-sm-2 col-form-label">Cookies:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="element-cookies">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-date-add" class="col-sm-2 col-form-label">Date Add:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="element-date-add">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-last-visit" class="col-sm-2 col-form-label">Last Visit:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="element-last-visit">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-request-type" class="col-sm-2 col-form-label">Request Type:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="element-request-type">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-is-active" class="col-sm-2 col-form-label">Is Active:</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" id="element-is-active">
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="element-add-by" class="col-sm-2 col-form-label">Add By:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="element-add-by">
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
 

@@ -140,7 +140,7 @@ class Urls:
                 sql += ' LIMIT ?'
                 sql_args.append(int(limit['count']))
             if 'offset' in limit:
-                sql += 'OFFSET ?'
+                sql += ' OFFSET ?'
                 sql_args.append(int(limit['offset']))
 
         try:
@@ -152,6 +152,17 @@ class Urls:
                 yield Url(self, record)
         except sqlite3.OperationalError:
             print('get::Urls Model: error when load urls')
+
+    def get_by_id(self, ent_id):
+        sql = "SELECT * FROM urls WHERE id=?"
+        try:
+            result = self.storage.cursor.execute(sql, (ent_id, ))
+            record = result.fetchone()
+            if not record:
+                return None
+            return Url(self, record)
+        except sqlite3.OperationalError:
+            print('get_by_id::Urls Model: error when load entity by id '+str(ent_id))
 
     def save(self, url):
         if url.id is None:
@@ -221,6 +232,12 @@ class Url:
         if key == 'address':
             self.__dict__['_parsed'] = urlparse(value)
         self.__dict__[key] = value
+
+    def to_dict(self):
+        e = self.__dict__
+        del e['_model']
+        del e['_parsed']
+        return e
 
     def init_params(self, params):
         if len(params) != 9:

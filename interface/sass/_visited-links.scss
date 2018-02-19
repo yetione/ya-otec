@@ -1,0 +1,15 @@
+#visitedLinks{
+  max-height: 300px;
+  overflow-y: auto;
+
+  > table{
+    width: 100%;
+    .visited-link{
+      cursor: pointer;
+      transition: all .3s ease;
+      &:hover{
+        color:#4f9fcf;
+      }
+    }
+  }
+}

@@ -1,7 +1,15 @@
+import $ from  "jquery";
+import 'bootstrap';
+import '../sass/main.scss';
+import Spider from "./modules/spider/spider";
+import UrlsModal from "./modules/modals/urls";
+
+
 new QWebChannel(qt.webChannelTransport, function(channel) {
     window.bridge = channel.objects.bridge;
     //window.spider = channel.objects.spider;
     window.spider = new Spider(channel.objects.spider);
+    window.urls = channel.objects.urls;
 
 
     /*spider.task_done.connect(function(task){
@@ -17,8 +25,7 @@ new QWebChannel(qt.webChannelTransport, function(channel) {
     // bridge.print('Hello world!');
     // channel.objects.bridge.print('TEST')
 });
-var table = new Spider('#shumHistory');
-
+var urlsModal = new UrlsModal($('#historyModal'));
 $(document).ready(function(){
     var $toggleBtn = $('#toggleSpider');
     $(document).on('spiderStateChange', function(event, state){
@@ -51,7 +58,9 @@ $(document).ready(function(){
         }
     });
 
+/*
     $('#historyModal').on('show.bs.modal', function (event) {
+
         bridge.get_urls(20, function(result){
             var html = '';
             for (var i=0;i<result.length;++i){
@@ -64,6 +73,7 @@ $(document).ready(function(){
             $('#url-table>tbody').html(html);
         });
     });
+    */
 
     $('#urlDetailModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
@@ -77,4 +87,3 @@ $(document).ready(function(){
 
     });
 });
-

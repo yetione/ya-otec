@@ -1,0 +1,33 @@
+{
+  "name": "YaOtec",
+  "version": "0.3.0",
+  "dependencies": {
+    "autoprefixer": "^6.7.7",
+    "babel-core": "^6.26.0",
+    "bootstrap": "^4.0.0",
+    "grunt": "^1.0.1",
+    "grunt-concurrent": "^2.3.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-css-mqpacker": "^3.0.1",
+    "grunt-postcss": "^0.8.0",
+    "jquery": "^3.3.1",
+    "load-grunt-config": "^0.19.2",
+    "lodash": "^4.17.5",
+    "node-sass": "^4.7.2",
+    "popper.js": "^1.12.9",
+    "postcss-csso": "^1.1.2",
+    "precss": "^3.1.0",
+    "sass-loader": "^6.0.6",
+    "webpack": "^3.11.0"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.2",
+    "css-loader": "^0.28.9",
+    "postcss-loader": "^2.1.0",
+    "style-loader": "^0.20.2"
+  },
+  "scripts": {
+    "build": "webpack"
+  }
+}

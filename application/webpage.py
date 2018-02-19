@@ -11,7 +11,10 @@ class WebPage(QWebEnginePage):
 
     def __init__(self, profile, parent):
         super(WebPage, self).__init__(profile, parent)
+        self.selectionChanged.emit()
 
+    def urlEvent(self):
+        pass
 
     def javaScriptConsoleMessage(self, level, msg, linenumber, source_id):
         try:
@@ -23,9 +26,9 @@ class WebPage(QWebEnginePage):
     def print(self, text):
         print('From JS:', text)
 
-    @pyqtSlot(int, result=list)
-    def get_urls(self, count):
+    @pyqtSlot(int, int, result=list)
+    def get_urls(self, offset, count):
         result = []
-        for url in self.application.storage.urls.get(limit={'count': count}):
+        for url in self.application.storage.urls.get(limit={'count': count, 'offset': offset}):
             result.append({'id': url.id, 'url': url.address, 'headers': url.headers, 'last_visit': url.last_visit})
         return result

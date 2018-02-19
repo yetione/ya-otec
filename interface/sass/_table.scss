@@ -1,0 +1,15 @@
+@import "variables";
+
+.table{
+  thead{
+    th{
+      color:$orange-dark;
+    }
+  }
+  tbody{
+    th{
+      color:$orange-light;
+    }
+  }
+
+}

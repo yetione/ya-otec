@@ -28,6 +28,7 @@ class Application(QMainWindow):
     available_browsers = []
     current_browsers = []
     loaded_browsers = {}
+    force_compile = True
     storage = None
     visited = []
     spider_running = False
@@ -45,6 +46,7 @@ class Application(QMainWindow):
         self.spider.task_interval = self.storage.options.get('task_interval', 1)
         self.spider_process = Process(target=self.spider.run)
         self.spider_object = SpiderObject(self)
+        self.urls_object = UrlsObject(self)
         self.force_compile = True
         self.queue = Queue()
         self.setup_ui()
@@ -63,24 +65,29 @@ class Application(QMainWindow):
         self.web_page = WebPage(self.web_profile, self)
         self.web_page.application = self
         self.web_view.setPage(self.web_page)
-        # self.web_page.profile().scripts().insert(self.client_script())
-        self.web_page.profile()
+
         self.chanel = QWebChannel(self.web_page)
         self.web_page.setWebChannel(self.chanel)
         self.chanel.registerObject('bridge', self.web_page)
         self.chanel.registerObject('spider', self.spider_object)
+        self.chanel.registerObject('urls', self.urls_object)
         self.set_page()
 
     def set_page(self):
         if self.force_compile or not exists(realpath('./data/compiled/index.html')) or \
                 getmtime(realpath('./interface/index.html')) > getmtime(realpath('./data/compiled/index.html')):
-            env = Environment(loader=FileSystemLoader('./interface'))
-            template = env.get_template('index.html')
-            file = open(realpath('./data/compiled/index.html'), 'w')
-            file.write(template.render(basepath='../../interface'))
-            file.close()
+            self._compile_template('index.html', './data/compiled/index.html')
         qFile_page = QFile(realpath('./data/compiled/index.html'))
         self.web_view.load(QUrl.fromLocalFile(QFileInfo(qFile_page).absoluteFilePath()))
+        self.web_page.selectionChanged.emit()
+
+    @staticmethod
+    def _compile_template(template, output):
+        env = Environment(loader=FileSystemLoader('./interface'))
+        template = env.get_template(template)
+        file = open(realpath(output), 'w')
+        file.write(template.render(basepath='../../interface'))
+        file.close()
 
     def get_browser(self, name):
         """
@@ -150,7 +157,8 @@ class Application(QMainWindow):
             logger = logging.getLogger('shum.app')
             logger.debug('Spider stopped')
 
-    def create_spider(self):
+    @staticmethod
+    def create_spider():
         return ShumSpider(thread_number=10, transport='threaded')
 
     def is_valid_url(self, url):
