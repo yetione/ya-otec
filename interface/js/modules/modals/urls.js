@@ -41,7 +41,7 @@ export default class UrlsModal{
     }
 
     cleanListTable() {
-        this.$listTable.find('tbody');
+        this.$listTable.find('tbody').html('');
     }
 
     cleanElementTab() {
@@ -105,7 +105,10 @@ export default class UrlsModal{
                 }
                 self.$listTable.find('tbody').append(html);
                 self.$loadMoreBtn.prop('disabled', false);
-                self.$listTable.find('.j-edit-url').off('click._edit_modal').on('click._edit_modal', function(event){
+                self.$listTable
+                    .find('.j-edit-url')
+                    .off('click._edit_modal')
+                    .on('click._edit_modal', function(event){
                     let entityId = $(event.target).data('url-id');
                     urls.get_by_id(entityId, function(url) {
                         if (url.length !== 1){

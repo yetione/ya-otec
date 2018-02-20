@@ -1,6 +1,7 @@
 from grab.spider import Spider, Task, Data
 from grab import Grab
 from time import sleep
+from random import random, betavariate
 
 from re import match
 
@@ -62,11 +63,18 @@ class ShumSpider(Spider):
             self.visited.append(url)
             yield Task('history_element', grab=g, visit_deep=False)
 
+    def _get_task_interval(self, grab):
+        doc = grab.doc
+        return self.task_interval+((random())/(doc.download_size+(doc.total_time*doc.code))**((random())/(len(doc.url))))
+
     def task_history_element(self, grab, task):
         logger = logging.getLogger('shum.spider')
         logger.debug(task.url)
-        self.queue.put(self.make_queue_element(grab, task))
-        sleep(self.task_interval)
+        interval = self._get_task_interval(grab)
+        t = self.make_queue_element(grab, task)
+        t['interval'] = interval
+        self.queue.put(t)
+        sleep(interval)
         if task.visit_deep:
             links = self.get_urls(grab)
 

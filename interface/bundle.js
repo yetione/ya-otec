@@ -10078,11 +10078,12 @@ __WEBPACK_IMPORTED_MODULE_0_jquery___default()(document).ready(function () {
         var button = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(event.relatedTarget);
         var url = button.data('full');
         var modal = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this);
-        modal.find('.j-url-url>td').html('<a href="' + url.url + '">' + url.url + '</a>');
+        modal.find('.j-url-url>td').html('<a href="' + url.url + '">' + decodeURI(url.url) + '</a>');
         modal.find('.j-url-code>td').text(url.result_code);
         modal.find('.j-url-time>td').text(url.request_time);
         modal.find('.j-url-size>td').text(url.page_size);
         modal.find('.j-url-ip>td').text(url.host_ip);
+        modal.find('.j-url-interval>td').text(url.interval);
     });
 });
 
@@ -17228,7 +17229,7 @@ class UrlsModal {
     }
 
     cleanListTable() {
-        this.$listTable.find('tbody');
+        this.$listTable.find('tbody').html('');
     }
 
     cleanElementTab() {
