@@ -17273,7 +17273,22 @@ class UrlsModal {
             this.$urlAddress.hide();
         }
         if ('headers' in data) {
-            this.$urlHeaders.val(data.headers);
+            let i = 0;
+            for (let name in data.headers) {
+                let template = this.$urlHeaders.find('.header-row.original').clone();
+                if (i != 0) {
+                    template.removeClass('original');
+                }
+                console.log(template.html());
+                console.log(data.headers[name]);
+
+                template.insertAfter(this.$urlHeaders.find('.header-row:last-child'));
+                template.find('.header-name').val(name);
+                template.find('.header-value').val(data.headers[name]);
+                i++;
+            }
+            this.$urlHeaders.find('.header-row.original:first-child').remove();
+            //this.$urlHeaders.val(data.headers);
         } else {
             this.$urlHeaders.hide();
         }

@@ -56,11 +56,31 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="element-headers" class="col-sm-2 col-form-label">Headers:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="element-headers">
+                                    <div class="col-sm-12">
+                                        <table class="table" id="element-headers">
+                                            <thead>
+                                            <tr>
+                                                <th>Header</th>
+                                                <th>Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="header-row original">
+                                                <td>
+                                                    <input type="text" class="form-control header-name">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control header-value">
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
-
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col align-self-end">
+                                        <button class="btn btn-success">Add Header</button>
+                                    </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="element-cookies" class="col-sm-2 col-form-label">Cookies:</label>

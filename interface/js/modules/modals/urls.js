@@ -76,7 +76,26 @@ export default class UrlsModal{
     setElementTabData(data) {
         if ('id' in data){this.$urlId.val(data.id);} else {this.$urlId.hide();}
         if ('address' in data){this.$urlAddress.val(data.address);} else {this.$urlAddress.hide();}
-        if ('headers' in data){this.$urlHeaders.val(data.headers);} else {this.$urlHeaders.hide();}
+        if ('headers' in data){
+            let i = 0;
+            for (let name in data.headers){
+                let template = this.$urlHeaders.find('.header-row.original').clone();
+                if (i != 0){
+                    template.removeClass('original');
+                }
+                console.log(template.html());
+                console.log(data.headers[name]);
+
+                template.insertAfter(this.$urlHeaders.find('.header-row:last-child'));
+                template.find('.header-name').val(name);
+                template.find('.header-value').val(data.headers[name]);
+                i++;
+            }
+            this.$urlHeaders.find('.header-row.original:first-child').remove();
+            //this.$urlHeaders.val(data.headers);
+        } else {
+            this.$urlHeaders.hide();
+        }
         if ('cookies' in data){this.$urlCookies.val(data.cookies);} else {this.$urlCookies.hide();}
         if ('date_add' in data){this.$urlDateAdd.val(data.date_add);} else {this.$urlDateAdd.hide();}
         if ('last_visit' in data){this.$urlLastVisit.val(data.last_visit);} else {this.$urlLastVisit.hide();}
