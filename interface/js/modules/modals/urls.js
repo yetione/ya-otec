@@ -80,7 +80,7 @@ export default class UrlsModal{
             let i = 0;
             for (let name in data.headers){
                 let template = this.$urlHeaders.find('.header-row.original').clone();
-                if (i != 0){
+                if (i !== 0){
                     template.removeClass('original');
                 }
                 template.insertAfter(this.$urlHeaders.find('.header-row:last-child'));
